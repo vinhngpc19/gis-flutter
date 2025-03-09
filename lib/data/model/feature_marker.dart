@@ -17,11 +17,13 @@ class FeatureMarker {
   String? id;
   Properties? properties;
   Geometry? geometry;
+  String? markerId;
 
   FeatureMarker({
     this.id,
     this.properties,
     this.geometry,
+    this.markerId
   });
 
   factory FeatureMarker.fromJson(Map<String, dynamic> json) => FeatureMarker(

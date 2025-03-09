@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:gis_disaster_flutter/base/base_screen.dart';
 import 'package:gis_disaster_flutter/pages/dashboard/dashboard_controller.dart';
+import 'package:gis_disaster_flutter/pages/home/home_page.dart';
 import 'package:gis_disaster_flutter/r.dart';
 
 class DashboardPage extends BaseScreen<DashboardController> {
@@ -17,7 +18,7 @@ class DashboardPage extends BaseScreen<DashboardController> {
           () => IndexedStack(
             index: controller.currentTabIndex.value,
             children: [
-              SizedBox(),
+              HomePage(),
               SizedBox(),
               SizedBox(),
               SizedBox(),
