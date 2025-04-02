@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get_instance/get_instance.dart';
 import 'package:get/route_manager.dart';
 import 'package:gis_disaster_flutter/base/base_widget.dart';
+import 'package:gis_disaster_flutter/global/app_theme_base.dart';
 
 class AppBarCustom extends BaseWidget implements PreferredSizeWidget {
   AppBarCustom(
@@ -50,9 +52,18 @@ class AppBarCustom extends BaseWidget implements PreferredSizeWidget {
     return PreferredSize(
       preferredSize: const Size.fromHeight(kToolbarHeight),
       child: AppBar(
-        systemOverlayStyle: SystemUiOverlayStyle.dark,
         scrolledUnderElevation: elevation,
         bottom: bottom,
+        systemOverlayStyle: SystemUiOverlayStyle(
+          statusBarColor:
+              (Get.find<AppThemeBase>().appTheme == AppThemeType.bright)
+                  ? Colors.white
+                  : Colors.black,
+          statusBarIconBrightness:
+              (Get.find<AppThemeBase>().appTheme == AppThemeType.bright)
+                  ? Brightness.dark
+                  : Brightness.light,
+        ),
         titleSpacing: titleSpacing,
         automaticallyImplyLeading: automaticallyImplyLeading,
         surfaceTintColor: color.white,
@@ -79,7 +90,7 @@ class AppBarCustom extends BaseWidget implements PreferredSizeWidget {
               ],
         backgroundColor: backgroundColor ?? color.white,
         centerTitle: centerTitle,
-        leading: hideLeading ? const SizedBox() : _buildLeading(),
+        leading: _buildLeading(),
         elevation: elevation,
         leadingWidth: 50,
         shadowColor: const Color(0xFFEAEAEA),
@@ -106,7 +117,7 @@ class AppBarCustom extends BaseWidget implements PreferredSizeWidget {
           Get.back();
         }
       },
-      child: const Icon(Icons.arrow_back_rounded, size: 30.0),
+      child: Icon(Icons.arrow_back_rounded, size: 30.0, color: color.mainColor),
     );
   }
 

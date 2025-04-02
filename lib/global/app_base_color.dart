@@ -7,4 +7,5 @@ abstract class AppColor {
   Color get backgroundColor;
   Color get greyTextColor;
   Color get dividerColor;
+  Color get redColor;
 }

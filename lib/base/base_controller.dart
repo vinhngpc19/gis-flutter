@@ -31,9 +31,9 @@ abstract class BaseController extends GetxController {
   }
 
   @override
-  void dispose() {
+  void onClose() {
     loadingController.hide();
     hideKeyBoard();
-    super.dispose();
+    super.onClose();
   }
 }

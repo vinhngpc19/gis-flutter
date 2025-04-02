@@ -13,6 +13,7 @@ abstract class RestClientBase {
       connectTimeout: const Duration(minutes: 1),
       receiveTimeout: const Duration(minutes: 1),
       contentType: formUrlEncodedContentType,
+
       responseType: ResponseType.json,
     );
 

@@ -26,11 +26,16 @@ abstract class BaseScreen<T extends GetxController> extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      child: builder(),
-    );
+    return Obx(() {
+      final loadingController = Get.find<LoadingController>().loadingCtrl.value;
+      return PopScope(
+          canPop: !loadingController,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+            child: builder(),
+          ));
+    });
   }
 
   Widget builder();

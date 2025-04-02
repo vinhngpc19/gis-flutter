@@ -15,7 +15,6 @@ class AppThemeBright extends AppTheme with BaseMixin {
         bottomAppBarTheme: _buildBottomAppBarTheme,
         dialogTheme: _buildDialogTheme,
         textTheme: GoogleFonts.manropeTextTheme(),
-        splashColor: Colors.transparent,
       );
 
   AppBarTheme get _buildAppBarTheme => AppBarTheme(
@@ -26,10 +25,11 @@ class AppThemeBright extends AppTheme with BaseMixin {
   BottomAppBarTheme get _buildBottomAppBarTheme =>
       const BottomAppBarTheme(elevation: 0);
 
-  DialogTheme get _buildDialogTheme => const DialogTheme(elevation: 0);
+  DialogTheme get _buildDialogTheme =>
+      DialogTheme(elevation: 0, backgroundColor: color.backgroundColor);
 
   @override
-  Color get mainColor => const Color(0xFF3184F2);
+  Color get mainColor => const Color(0xFF3A52EE);
 
   @override
   Color get black => const Color(0xFF000000);
@@ -45,4 +45,7 @@ class AppThemeBright extends AppTheme with BaseMixin {
 
   @override
   Color get dividerColor => const Color.fromARGB(255, 227, 226, 226);
+
+  @override
+  Color get redColor => Colors.red;
 }

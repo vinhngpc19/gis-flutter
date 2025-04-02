@@ -1,9 +1,16 @@
+import 'package:gis_disaster_flutter/data/model/user.dart';
+import 'package:hive_flutter/adapters.dart';
+
 mixin CacheManager {
-  String? getToken() {
-    return '';
+  Future<void> saveUser(User user) async {
+    await Hive.box<User>('user').put('user', user);
   }
 
-  void removeToken() {}
+  User? getUser() {
+    return Hive.box<User>('user').get('user');
+  }
 
-  void saveToken(String? token) {}
+  Future<void> deleteUser() async {
+    await Hive.box<User>('user').delete('user');
+  }
 }

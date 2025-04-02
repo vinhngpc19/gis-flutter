@@ -18,23 +18,23 @@ class FeatureMarker {
   Properties? properties;
   Geometry? geometry;
   String? markerId;
+  bool? isUserSend;
 
-  FeatureMarker({
-    this.id,
-    this.properties,
-    this.geometry,
-    this.markerId
-  });
+  FeatureMarker(
+      {this.id,
+      this.properties,
+      this.geometry,
+      this.markerId,
+      this.isUserSend});
 
   factory FeatureMarker.fromJson(Map<String, dynamic> json) => FeatureMarker(
-        id: json['id'],
-        properties: json['properties'] == null
-            ? null
-            : Properties.fromJson(json['properties']),
-        geometry: json['geometry'] == null
-            ? null
-            : Geometry.fromJson(json['geometry']),
-      );
+      id: json['id'],
+      properties: json['properties'] == null
+          ? null
+          : Properties.fromJson(json['properties']),
+      geometry:
+          json['geometry'] == null ? null : Geometry.fromJson(json['geometry']),
+      isUserSend: json['is_user_send']);
 }
 
 class Geometry {
@@ -55,7 +55,9 @@ class Geometry {
                 ? List<List<List<double>>>.from(json['coordinates']!.map((x) =>
                     List<List<double>>.from(x.map((x) =>
                         List<double>.from(x.map((x) => x?.toDouble()))))))
-                : List<List<List<List<double>>>>.from(json['coordinates']!.map((x) => List<List<List<double>>>.from(x.map((x) => List<List<double>>.from(x.map((x) => List<double>.from(x.map((x) => x?.toDouble()))))))));
+                : List<List<List<List<double>>>>.from(json['coordinates']!.map((x) =>
+                    List<List<List<double>>>.from(x.map((x) => List<List<double>>.from(
+                        x.map((x) => List<double>.from(x.map((x) => x?.toDouble()))))))));
     return Geometry(
       type: json['type'],
       coordinates: coordinates,
@@ -71,6 +73,7 @@ class Properties {
   String? surveyDate;
   String? surveyer;
   String? name1;
+  String? image;
 
   Properties(
       {this.creationDa,
@@ -79,7 +82,8 @@ class Properties {
       this.floodRoad,
       this.surveyDate,
       this.surveyer,
-      this.name1});
+      this.name1,
+      this.image});
 
   factory Properties.fromJson(Map<String, dynamic> json) => Properties(
         creationDa: json['CreationDa'],
@@ -89,6 +93,7 @@ class Properties {
         surveyDate: json['SurveyDate'],
         surveyer: json['Surveyer'],
         name1: json['NAME_1'],
+        image: json['image'],
       );
 }
 

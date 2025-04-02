@@ -21,12 +21,12 @@ class MainInterceptor with CacheManager implements Interceptor {
     options.headers.addAll(
       <String, dynamic>{'Accept': 'application/json'},
     );
-    if ((getToken() ?? '').isNotEmpty) {
-      debugPrint('=======> Bearer ${getToken()}');
-      options.headers.addAll(
-        <String, dynamic>{'Authorization': 'Bearer ${getToken()}'},
-      );
-    }
+    // if ((getToken() ?? '').isNotEmpty) {
+    //   debugPrint('=======> Bearer ${getToken()}');
+    //   options.headers.addAll(
+    //     <String, dynamic>{'Authorization': 'Bearer ${getToken()}'},
+    //   );
+    // }
     debugPrint('=======> HEADER: ${options.headers}');
     if (options.data != null) {
       debugPrint('=======> [REQUEST DATA]: ${options.data}');
