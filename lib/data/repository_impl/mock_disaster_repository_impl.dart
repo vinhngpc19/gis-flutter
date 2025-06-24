@@ -7,7 +7,7 @@ import 'package:gis_disaster_flutter/data/model/province_by_api.dart';
 import 'package:gis_disaster_flutter/data/repository/mock_disaster_repository.dart';
 import 'package:gis_disaster_flutter/global/app_url.dart';
 
-const goongApiKey = '';
+const goongApiKey = 'vXwzyfs5RAxWR4iG4KjDRbsJuYbowLzMFVuphp7l';
 
 class MockDisasterRepositoryImpl extends MockDisasterRepository {
   final RestClient _client = RestClient();
@@ -62,5 +62,10 @@ class MockDisasterRepositoryImpl extends MockDisasterRepository {
   @override
   Future<void> sendMarker({required DisasterParam param}) async {
     await _client.post(AppUrl.addDisasterData, data: param.toJson());
+  }
+
+  @override
+  Future<void> updateMarker({required DisasterParam param}) async {
+    await _client.post(AppUrl.updateDisaster, data: param.toJson());
   }
 }

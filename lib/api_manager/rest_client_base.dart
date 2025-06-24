@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:gis_disaster_flutter/api_manager/api_error.dart';
 import 'package:gis_disaster_flutter/api_manager/custom_interceptor.dart';
 
 abstract class RestClientBase {
@@ -45,7 +46,7 @@ abstract class RestClientBase {
 
       return _mapResponse(response.data);
     } catch (e) {
-      throw e;
+      throw _mapError(e);
     }
   }
 
@@ -69,95 +70,104 @@ abstract class RestClientBase {
       );
       return _mapResponse(response.data);
     } catch (e) {
-      throw e;
+      throw _mapError(e);
     }
   }
 
-  // ApiError _mapError(dynamic e) {
-  //   if (e is DioException) {
-  //     // String? code = e.response?.statusCode.toString();
-  //     switch (e.type) {
-  //       case DioExceptionType.connectionTimeout:
-  //       case DioExceptionType.sendTimeout:
-  //       case DioExceptionType.receiveTimeout:
-  //         return ApiError(
-  //           message: LocaleKeys.unexpectedError,
-  //           extraData: e.response?.data,
-  //         );
-  //       case DioExceptionType.badCertificate:
-  //       case DioExceptionType.badResponse:
-  //         return ApiError(
-  //           errorCode: '${e.response?.data['code']}',
-  //           message: '${e.response?.data['message']}',
-  //           extraData: e.response?.data,
-  //         );
-  //       case DioExceptionType.cancel:
-  //         return ApiError(
-  //           errorCode: '',
-  //           message: '',
-  //           extraData: e.response?.data,
-  //         );
-  //       case DioExceptionType.connectionError:
-  //       case DioExceptionType.unknown:
-  //         return const ApiError(
-  //           message: LocaleKeys.noInternet,
-  //         );
-  //     }
-  //   }
+  Future<dynamic> put(String path,
+      {dynamic data,
+      Map<String, dynamic>? queryParameters,
+      Options? options,
+      CancelToken? cancelToken,
+      ProgressCallback? onSendProgress,
+      ProgressCallback? onReceiveProgress}) async {
+    try {
+      final Response<dynamic> response = await _dio.put<dynamic>(
+        path,
+        data: data,
+        queryParameters: queryParameters,
+        options: options,
+        cancelToken: cancelToken,
+        onSendProgress: onSendProgress,
+        onReceiveProgress: onReceiveProgress,
+      );
 
-  //   if (e is ApiError) {
-  //     return ApiError(errorCode: e.errorCode, message: '${e.message}');
-  //   }
+      return _mapResponse(response.data);
+    } catch (e) {
+      throw _mapError(e);
+    }
+  }
 
-  //   return ApiError(
-  //     errorCode: '${e.errorCode}',
-  //     message: '${e.message}',
-  //     extraData: e?.data,
-  //   );
-  // }
+  Future<dynamic> patch(String path,
+      {dynamic data,
+      Map<String, dynamic>? queryParameters,
+      Options? options,
+      CancelToken? cancelToken,
+      ProgressCallback? onSendProgress,
+      ProgressCallback? onReceiveProgress}) async {
+    try {
+      final Response<dynamic> response = await _dio.patch<dynamic>(path,
+          data: data,
+          queryParameters: queryParameters,
+          options: options,
+          cancelToken: cancelToken,
+          onSendProgress: onSendProgress,
+          onReceiveProgress: onReceiveProgress);
+
+      return _mapResponse(response.data);
+    } catch (e) {
+      throw _mapError(e);
+    }
+  }
+
+  ApiError _mapError(dynamic e) {
+    if (e is DioException) {
+      switch (e.type) {
+        case DioExceptionType.connectionTimeout:
+        case DioExceptionType.sendTimeout:
+        case DioExceptionType.receiveTimeout:
+          return ApiError(
+            message: 'Connection timed out, please try again later.',
+            extraData: e.response?.data,
+          );
+        case DioExceptionType.badCertificate:
+        case DioExceptionType.badResponse:
+          return ApiError(
+            errorCode: '${e.response?.data['code']}',
+            message: '${e.response?.data['message']}',
+            extraData: e.response?.data,
+          );
+        case DioExceptionType.cancel:
+          return ApiError(
+            errorCode: '',
+            message: '',
+            extraData: e.response?.data,
+          );
+        case DioExceptionType.connectionError:
+        case DioExceptionType.unknown:
+          return const ApiError(
+            message: 'Network error, please try again later.',
+          );
+      }
+    }
+
+    return ApiError(
+      errorCode: e.errorCode as String?,
+      message: e.message as String?,
+      extraData: e?.data,
+    );
+  }
 
   dynamic _mapResponse(dynamic response) {
-    // if (response is Map &&
-    //     ((response['success'] ?? response['Success']) as bool == false)) {
-    //   throw ApiError(
-    //       errorCode: '${(response['success'] ?? response['Success']) as bool?}',
-    //       message: response['message'] as String?);
-    // }
     if (response is Map &&
         response['error'] != '' &&
         response['error'] != null) {
-      // throw ApiError(
-      //   // error: response['error'] as String?,
-      //   message: response['message'] as String?,
-      //   extraData: response,
-      // );
+      throw ApiError(
+        errorCode: response['errorCode'] as String?,
+        message: response['message'] as String?,
+        extraData: response,
+      );
     }
     return response['data'] ?? response;
   }
-}
-
-class Errors {
-  Errors({
-    required this.message,
-    this.extensions,
-  });
-
-  factory Errors.fromJson(Map<String, dynamic> json) => Errors(
-        message: json['message'],
-        extensions: json['extensions'] == null
-            ? null
-            : Extensions.fromJson(json['extensions']),
-      );
-  String? message;
-  Extensions? extensions;
-}
-
-class Extensions {
-  Extensions({
-    this.code,
-  });
-  factory Extensions.fromJson(Map<String, dynamic> json) => Extensions(
-        code: json['code'],
-      );
-  dynamic code;
 }

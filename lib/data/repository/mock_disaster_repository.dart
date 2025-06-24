@@ -9,12 +9,10 @@ abstract class MockDisasterRepository {
   Future<FeaturePolygon> getPolygon({required String province});
   Future<Provinces> getAllProvinces();
   Future<ProvinceByApi> getCoordinateProvince({required String address});
-
   Future<ProvinceByApi> getProvinceByPosition({required String latlng});
-
   Future<FeatureMarkers> getErosions({required String province});
 
   // Future<void> updateProvincePosition({required ProvincePositionParam param});
-
   Future<void> sendMarker({required DisasterParam param});
+  Future<void> updateMarker({required DisasterParam param});
 }

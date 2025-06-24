@@ -8,20 +8,12 @@ import 'package:google_sign_in/google_sign_in.dart';
 class SignInController extends BaseController with CacheManager {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-  @override
-  void onInit() {
-    super.onInit();
-  }
-
   Future<void> signInWithGoogle() async {
     try {
       showLoading();
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
       if (googleUser != null) {
-        final GoogleSignInAuthentication googleAuth =
-            await googleUser.authentication;
-
         // save user here
         await saveUser(User(
           id: googleUser.id,

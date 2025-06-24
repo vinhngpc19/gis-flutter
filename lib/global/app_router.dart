@@ -16,7 +16,7 @@ class AppRouter {
   static const String routerSignIn = '/sign_in';
   static const transitionDuration = Duration(milliseconds: 300);
   static const curve = Curves.fastOutSlowIn;
-  static var transition = Transition.fadeIn;
+  static const transition = Transition.fadeIn;
 
   static List<GetPage> getPages = <GetPage>[
     GetPage<SplashPage>(

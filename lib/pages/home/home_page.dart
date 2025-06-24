@@ -237,6 +237,28 @@ class HomePage extends BaseScreen<HomeController> with CacheManager {
                       const SizedBox(width: 2),
                       Text('Điểm trượt lở', style: textStyle.regular()),
                     ])),
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 90,
+                      child: CustomInputText(
+                          title: 'Độ ngập nhà:',
+                          hintText: '',
+                          controller: controller.floodhouse,
+                          marginTop: 0),
+                    ),
+                    const SizedBox(width: 90),
+                    SizedBox(
+                      width: 90,
+                      child: CustomInputText(
+                          title: 'Độ ngập đường',
+                          hintText: '',
+                          controller: controller.floodRoad,
+                          marginTop: 0),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
                 Obx(() => GestureDetector(
                       onTap: () => _showImageSourceModal(),
                       child: Container(

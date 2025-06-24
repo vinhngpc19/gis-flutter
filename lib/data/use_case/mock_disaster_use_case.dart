@@ -94,4 +94,17 @@ class MockDisasterUseCase {
       onError();
     }
   }
+
+  Future<void> updateMarker(
+      {required DisasterParam param,
+      required Function() onSuccess,
+      required Function() onError}) async {
+    try {
+      await _repository.updateMarker(param: param);
+      onSuccess();
+    } catch (err) {
+      print(err);
+      onError();
+    }
+  }
 }

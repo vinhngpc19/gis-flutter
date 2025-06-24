@@ -1,6 +1,6 @@
 // ignore: depend_on_referenced_packages
 import 'package:hive/hive.dart';
-part 'user.g.dart'; // File này sẽ được tạo tự động
+part 'user.g.dart';
 
 @HiveType(typeId: 0)
 class User extends HiveObject {

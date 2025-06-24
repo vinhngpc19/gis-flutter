@@ -23,11 +23,12 @@ import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 
 const double lngVietnamPos = 105.806692;
 const double latVietnamPos = 15.903061;
-const mapboxAccessToken = '';
-const goongKey = '';
+const mapboxAccessToken =
+    'pk.eyJ1Ijoia2hvbmdsdXVtYXRraGF1IiwiYSI6ImNtMmo2MHVwdTAyNnMybG9yNXhwb3hjY3cifQ.vua0uzDkJsMhbr7E0OsU-A';
+const goongKey = '0cJVlGTB70CBs8p1QNvVIF3OCyX10ggIwVackjQJ';
 
 class HomeController extends BaseController
-    with GetTickerProviderStateMixin, CacheManager {
+    with GetTickerProviderStateMixin, CacheManager, WidgetsBindingObserver {
   final _useCase = MockDisasterUseCase();
 
   MapboxMap? mapboxMap;
@@ -41,7 +42,8 @@ class HomeController extends BaseController
   RxBool isSelectedProvince = false.obs;
   final TextEditingController locationController = TextEditingController();
   final TextEditingController nameController = TextEditingController();
-
+  final TextEditingController floodRoad = TextEditingController();
+  final TextEditingController floodhouse = TextEditingController();
   RxString initSurveyDate = DateFormat('dd/MM/yyyy').format(DateTime.now()).obs;
   RxString updateSurveyDate =
       DateFormat('dd/MM/yyyy').format(DateTime.now()).obs;
@@ -58,12 +60,83 @@ class HomeController extends BaseController
   String? localProvinceName;
   Rx<File?> imageFile = Rx<File?>(null);
 
+  // Lưu trữ trạng thái camera khi app chuyển sang background
+  CameraState? _savedCameraState;
+
   @override
   void onInit() {
     MapboxOptions.setAccessToken(mapboxAccessToken);
     tabController = TabController(
         vsync: this, length: listProvinces.length, initialIndex: 0);
+    WidgetsBinding.instance.addObserver(this);
     super.onInit();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused && mapboxMap != null) {
+      // Lưu trạng thái camera khi app vào background
+      _saveCameraState();
+    } else if (state == AppLifecycleState.resumed && mapboxMap != null) {
+      // Khi ứng dụng trở lại từ background, sử dụng state đã lưu
+      _refreshMapAfterResume();
+    }
+  }
+
+  Future<void> _saveCameraState() async {
+    try {
+      _savedCameraState = await mapboxMap?.getCameraState();
+    } catch (e) {
+      print('Lỗi khi lưu trạng thái camera: $e');
+    }
+  }
+
+  Future<void> _refreshMapAfterResume() async {
+    try {
+      if (mapboxMap != null) {
+        // Tải lại style của map
+        await mapboxMap?.loadStyleURI(
+            'https://tiles.goong.io/assets/goong_light_v2.json?api_key=$goongKey');
+
+        // Khôi phục lại camera position từ state đã lưu
+        if (_savedCameraState != null) {
+          await mapboxMap?.flyTo(
+            CameraOptions(
+              center: _savedCameraState!.center,
+              zoom: _savedCameraState!.zoom,
+              bearing: _savedCameraState!.bearing,
+              pitch: _savedCameraState!.pitch,
+            ),
+            MapAnimationOptions(duration: 0),
+          );
+        }
+
+        // Tạo lại các annotations
+        await _recreateAnnotations();
+      }
+    } catch (e) {
+      print('Lỗi khi làm mới map: $e');
+    }
+  }
+
+  Future<void> _recreateAnnotations() async {
+    try {
+      // Nếu có polyline annotations, vẽ lại chúng
+      if (polylineOptions.isNotEmpty) {
+        await polylineAnnotationManager?.deleteAll();
+        polylineOptions.length == 1
+            ? await polylineAnnotationManager?.create(polylineOptions[0])
+            : await polylineAnnotationManager?.createMulti(polylineOptions);
+      }
+
+      // Nếu có circle annotations (markers), vẽ lại chúng
+      if (listFloodFeatures.isNotEmpty) {
+        await circleAnnotationManager?.deleteAll();
+        await _drawMarkers();
+      }
+    } catch (e) {
+      print('Lỗi khi tạo lại annotations: $e');
+    }
   }
 
   void _changeTabController() {
@@ -336,6 +409,8 @@ class HomeController extends BaseController
                 : null,
             creationDa: initSurveyDate.value,
             surveyDate: updateSurveyDate.value,
+            floodHouse: double.tryParse(floodhouse.text),
+            floodRoad: double.tryParse(floodRoad.text),
             surveyer:
                 nameController.text.isNotEmpty ? nameController.text : null,
             position: [localPos!.lng.toDouble(), localPos!.lat.toDouble()],
@@ -355,6 +430,55 @@ class HomeController extends BaseController
         });
   }
 
+  Future<void> updateDisasterInfo(String id) async {
+    if (id == '') {
+      return;
+    }
+    // showLoading();
+    if (tabController.index == 1) {
+      if (localProvinceName == null) {
+        await _useCase.getProvinceByPosition(
+            latlng: '${localPos!.lat},${localPos!.lng}',
+            onSuccess: (data) async {
+              localProvinceName ??= data.compound?.province;
+            },
+            onError: () {
+              hideLoading();
+              Get.back();
+              SnackBarHelper.showError('Gửi thất bại!');
+              return;
+            });
+      }
+    }
+    await _useCase.updateMarker(
+        param: DisasterParam(
+          id: id,
+          province: tabController.index == 1
+              ? (localProvinceName ?? '')
+              : listProvinces[tabController.index].name1 ?? '',
+          isFlood: isCheckedFlood.value,
+          placeName: locationController.text.isNotEmpty
+              ? locationController.text
+              : null,
+          creationDa: initSurveyDate.value,
+          surveyDate: updateSurveyDate.value,
+          surveyer: nameController.text.isNotEmpty ? nameController.text : null,
+        ),
+        onSuccess: () {
+          hideLoading().whenComplete(() => tabController.index == 1
+              ? getLocalPolylineProvince()
+              : getPolylineAndMarker(
+                  province: listProvinces[tabController.index]));
+          Get.back();
+          SnackBarHelper.showMessage('Gửi thành công!');
+        },
+        onError: () {
+          hideLoading();
+          Get.back();
+          SnackBarHelper.showError('Gửi thất bại!');
+        });
+  }
+
   void deleteTextWhenPopModal() {
     final currentFormatDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
     locationController.text = '';
@@ -363,6 +487,8 @@ class HomeController extends BaseController
     updateSurveyDate.value = currentFormatDate;
     imageFile.value = null;
     isCheckedFlood.value = true;
+    floodRoad.text = '';
+    floodhouse.text = '';
   }
 
   Future<void> pickImage({required picker.ImageSource imageSource}) async {
@@ -381,6 +507,7 @@ class HomeController extends BaseController
     _clearAnnotations();
     mapboxMap?.dispose();
     tabController.dispose();
+    WidgetsBinding.instance.removeObserver(this);
     super.onClose();
   }
 }
