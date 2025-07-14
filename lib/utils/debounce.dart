@@ -7,7 +7,7 @@ class Debounce {
   Duration delay;
   Timer? _timer;
 
-  void call(void Function() callback) {
+  void run(void Function() callback) {
     _timer?.cancel();
     _timer = Timer(delay, callback);
   }

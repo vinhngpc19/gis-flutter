@@ -14,41 +14,25 @@ abstract class RestClientBase {
       connectTimeout: const Duration(minutes: 1),
       receiveTimeout: const Duration(minutes: 1),
       contentType: formUrlEncodedContentType,
-
       responseType: ResponseType.json,
     );
 
-    _dio = Dio(options);
-    _dio.interceptors.addAll(<Interceptor>[MainInterceptor()]);
-    // _dio.interceptors.add(RefreshTokenInterceptor(_dio));
+    dio = Dio(options);
+    dio.interceptors.addAll(<Interceptor>[MainInterceptor()]);
+    // dio.interceptors.add(RefreshTokenInterceptor(dio));
   }
 
   static const String formUrlEncodedContentType =
-      'application/json;charset=UTF-8';
+      'application/x-www-form-urlencoded; charset=UTF-8';
   final String baseUrl;
-  late Dio _dio;
+  late Dio dio;
 
   Future<dynamic> get(String path,
       {Map<String, dynamic>? queryParameters,
       Options? options,
       dynamic data,
       CancelToken? cancelToken,
-      ProgressCallback? onReceiveProgress}) async {
-    try {
-      final Response<dynamic> response = await _dio.get<dynamic>(
-        path,
-        queryParameters: queryParameters,
-        data: data,
-        options: options,
-        cancelToken: cancelToken,
-        onReceiveProgress: onReceiveProgress,
-      );
-
-      return _mapResponse(response.data);
-    } catch (e) {
-      throw _mapError(e);
-    }
-  }
+      ProgressCallback? onReceiveProgress});
 
   Future<dynamic> post(String path,
       {Map<String, dynamic>? formData,
@@ -57,22 +41,7 @@ abstract class RestClientBase {
       Options? options,
       CancelToken? cancelToken,
       ProgressCallback? onSendProgress,
-      ProgressCallback? onReceiveProgress}) async {
-    try {
-      final Response<dynamic> response = await _dio.post<dynamic>(
-        path,
-        data: formData != null ? FormData.fromMap(formData) : data,
-        queryParameters: queryParameters,
-        options: options,
-        cancelToken: cancelToken,
-        onSendProgress: onSendProgress,
-        onReceiveProgress: onReceiveProgress,
-      );
-      return _mapResponse(response.data);
-    } catch (e) {
-      throw _mapError(e);
-    }
-  }
+      ProgressCallback? onReceiveProgress});
 
   Future<dynamic> put(String path,
       {dynamic data,
@@ -80,23 +49,7 @@ abstract class RestClientBase {
       Options? options,
       CancelToken? cancelToken,
       ProgressCallback? onSendProgress,
-      ProgressCallback? onReceiveProgress}) async {
-    try {
-      final Response<dynamic> response = await _dio.put<dynamic>(
-        path,
-        data: data,
-        queryParameters: queryParameters,
-        options: options,
-        cancelToken: cancelToken,
-        onSendProgress: onSendProgress,
-        onReceiveProgress: onReceiveProgress,
-      );
-
-      return _mapResponse(response.data);
-    } catch (e) {
-      throw _mapError(e);
-    }
-  }
+      ProgressCallback? onReceiveProgress});
 
   Future<dynamic> patch(String path,
       {dynamic data,
@@ -104,23 +57,9 @@ abstract class RestClientBase {
       Options? options,
       CancelToken? cancelToken,
       ProgressCallback? onSendProgress,
-      ProgressCallback? onReceiveProgress}) async {
-    try {
-      final Response<dynamic> response = await _dio.patch<dynamic>(path,
-          data: data,
-          queryParameters: queryParameters,
-          options: options,
-          cancelToken: cancelToken,
-          onSendProgress: onSendProgress,
-          onReceiveProgress: onReceiveProgress);
+      ProgressCallback? onReceiveProgress});
 
-      return _mapResponse(response.data);
-    } catch (e) {
-      throw _mapError(e);
-    }
-  }
-
-  ApiError _mapError(dynamic e) {
+  ApiError mapError(dynamic e) {
     if (e is DioException) {
       switch (e.type) {
         case DioExceptionType.connectionTimeout:
@@ -150,7 +89,6 @@ abstract class RestClientBase {
           );
       }
     }
-
     return ApiError(
       errorCode: e.errorCode as String?,
       message: e.message as String?,
@@ -158,7 +96,7 @@ abstract class RestClientBase {
     );
   }
 
-  dynamic _mapResponse(dynamic response) {
+  dynamic mapResponse(dynamic response) {
     if (response is Map &&
         response['error'] != '' &&
         response['error'] != null) {

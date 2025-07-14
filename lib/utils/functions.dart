@@ -9,7 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:get/get_utils/src/platform/platform.dart';
-import 'package:package_info_plus/package_info_plus.dart';
+// import 'package:package_info_plus/package_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 String generateRandomString(int length) {
@@ -20,14 +20,14 @@ String generateRandomString(int length) {
       .join();
 }
 
-Future<bool?> allowPushFlag() async {
-  final PermissionStatus status = await Permission.notification.status;
-  if (status.isDenied || status.isPermanentlyDenied) {
-    return false;
-  } else {
-    return true;
-  }
-}
+// Future<bool?> allowPushFlag() async {
+//   final PermissionStatus status = await Permission.notification.status;
+//   if (status.isDenied || status.isPermanentlyDenied) {
+//     return false;
+//   } else {
+//     return true;
+//   }
+// }
 
 Future<String?> getDeviceId() async {
   if (GetPlatform.isIOS) {
@@ -39,10 +39,10 @@ Future<String?> getDeviceId() async {
   }
 }
 
-Future<String> getAppVersion() async {
-  final PackageInfo packageInfo = await PackageInfo.fromPlatform();
-  return packageInfo.version;
-}
+// Future<String> getAppVersion() async {
+//   final PackageInfo packageInfo = await PackageInfo.fromPlatform();
+//   return packageInfo.version;
+// }
 
 Future<String> getVersionOS() async {
   final deviceInfoPlugin = DeviceInfoPlugin();

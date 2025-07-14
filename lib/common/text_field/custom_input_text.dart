@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:gis_disaster_flutter/base/base_mixin.dart';
+import 'package:gis_disaster_flutter/utils/debounce.dart';
 
 class CustomInputText extends StatefulWidget {
   const CustomInputText({
@@ -18,6 +19,8 @@ class CustomInputText extends StatefulWidget {
     this.textCapitalization = TextCapitalization.none,
     this.textInputType = TextInputType.text,
     this.inputFormatters,
+    this.onChanged,
+    this.onChangedDelay,
     this.isReadOnly = false,
     this.maxLines = 1,
     this.minLines = 1,
@@ -35,7 +38,6 @@ class CustomInputText extends StatefulWidget {
     this.contentPadding,
     this.borderColor,
     this.useSuffix = false,
-    this.onPhoneTap,
     this.iconLeadingImage,
     this.marginTop = 22,
     this.borderRadius = 0,
@@ -43,7 +45,6 @@ class CustomInputText extends StatefulWidget {
     this.showRequired = false,
     this.onPress,
     this.horizontalTitle,
-    this.showHorizontalOption = false,
     this.onTap,
   });
 
@@ -68,7 +69,8 @@ class CustomInputText extends StatefulWidget {
   final TextCapitalization textCapitalization;
   final TextInputType textInputType;
   final List<TextInputFormatter>? inputFormatters;
-
+  final Function(String)? onChanged;
+  final Function(String)? onChangedDelay;
   final int maxLines;
   final int? minLines;
   final double fontSize;
@@ -81,12 +83,9 @@ class CustomInputText extends StatefulWidget {
   final String? Function(String?)? validator;
   final bool useSuffix;
   final double marginTop;
-  final Function()? onPhoneTap;
   final Function()? onPress;
   final bool enabledBorder;
   final bool showRequired;
-
-  final bool showHorizontalOption;
   final VoidCallback? onTap;
 
   @override
@@ -97,6 +96,7 @@ class _CustomInputTextState extends State<CustomInputText> with BaseMixin {
   final RxBool _isShowButtonClear = false.obs;
   final RxBool _isShowText = false.obs;
   String? errText;
+  final Debounce debounce = Debounce(const Duration(milliseconds: 700));
   @override
   void initState() {
     super.initState();
@@ -116,22 +116,7 @@ class _CustomInputTextState extends State<CustomInputText> with BaseMixin {
   }
 
   @override
-  void setState(Function() fn) {
-    if (mounted) {
-      super.setState(fn);
-    }
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    widget.controller.addListener(
-      () => setState(() {}),
-    );
     return Padding(
       padding: EdgeInsets.only(top: widget.marginTop),
       child: Column(
@@ -202,6 +187,21 @@ class _CustomInputTextState extends State<CustomInputText> with BaseMixin {
                     inputFormatters: (widget.inputFormatters ?? []),
                     textAlign: widget.textAlign ?? TextAlign.start,
                     enabled: !widget.isReadOnly,
+                    onChanged: (String v) {
+                      if (widget.onChangedDelay != null) {
+                        debounce.run(() {
+                          if (!_isShowButtonClear.value || v.isEmpty) {
+                            _isShowButtonClear.value = v.isNotEmpty;
+                          }
+                          widget.onChangedDelay?.call(v);
+                        });
+                      } else {
+                        if (!_isShowButtonClear.value || v.isEmpty) {
+                          _isShowButtonClear.value = v.isNotEmpty;
+                        }
+                        widget.onChanged?.call(v);
+                      }
+                    },
                     style: widget.styleText ??
                         textStyle.regular(color: color.black, size: 14),
                     validator: (value) {

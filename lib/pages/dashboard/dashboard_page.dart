@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:gis_disaster_flutter/base/base_screen.dart';
 import 'package:gis_disaster_flutter/pages/dashboard/dashboard_controller.dart';
+import 'package:gis_disaster_flutter/pages/forecast/forecast_page.dart';
 import 'package:gis_disaster_flutter/pages/home/home_page.dart';
 import 'package:gis_disaster_flutter/pages/user/user_page.dart';
 import 'package:gis_disaster_flutter/r.dart';
@@ -19,6 +20,7 @@ class DashboardPage extends BaseScreen<DashboardController> {
             index: controller.currentTabIndex.value,
             children: [
               HomePage(),
+              ForecastPage(),
               UserPage(),
             ],
           ),
@@ -41,6 +43,11 @@ class DashboardPage extends BaseScreen<DashboardController> {
                 index: 0,
                 icon: AssetIcons.iconMap,
                 activeIcon: AssetIcons.iconMapActive),
+            _buildBottomNvBarItem(
+                title: 'Dự báo',
+                index: 0,
+                icon: AssetIcons.iconUser,
+                activeIcon: AssetIcons.iconUserActive),
             _buildBottomNvBarItem(
                 title: 'Cá nhân',
                 index: 0,
