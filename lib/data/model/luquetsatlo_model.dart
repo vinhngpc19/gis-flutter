@@ -1,3 +1,28 @@
+enum RiskLevel {
+  thap('Thấp'),
+  trungBinh('Trung bình'),
+  cao('Cao'),
+  ratCao('Rất cao');
+
+  const RiskLevel(this.value);
+  final String value;
+
+  static RiskLevel fromString(String? value) {
+    switch (value) {
+      case 'Thấp':
+        return RiskLevel.thap;
+      case 'Trung bình':
+        return RiskLevel.trungBinh;
+      case 'Cao':
+        return RiskLevel.cao;
+      case 'Rất cao':
+        return RiskLevel.ratCao;
+      default:
+        return RiskLevel.trungBinh;
+    }
+  }
+}
+
 class Temperatures {
   final int? communeId2Cap;
   final String? communeName2Cap;

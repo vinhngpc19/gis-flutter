@@ -1,7 +1,9 @@
 import 'package:gis_disaster_flutter/api_manager/rest_client.dart';
+import 'package:gis_disaster_flutter/config/dev_config.dart';
 import 'package:gis_disaster_flutter/data/model/disaster_param.dart';
 import 'package:gis_disaster_flutter/data/model/feature_marker.dart';
 import 'package:gis_disaster_flutter/data/model/feature_polygon.dart';
+import 'package:gis_disaster_flutter/data/model/luquetsatlo_model.dart';
 import 'package:gis_disaster_flutter/data/model/province.dart';
 import 'package:gis_disaster_flutter/data/model/province_by_api.dart';
 import 'package:gis_disaster_flutter/data/repository/mock_disaster_repository.dart';
@@ -67,5 +69,26 @@ class MockDisasterRepositoryImpl extends MockDisasterRepository {
   @override
   Future<void> updateMarker({required DisasterParam param}) async {
     await _client.post(AppUrl.updateDisaster, data: param.toJson());
+  }
+
+  @override
+  Future<List<Temperatures>> getForecast(
+      {required int sogiodubao, required String date}) async {
+    final response = await _client.postWithContentType(
+      '${DevConfig.mapboxUrl}${AppUrl.forecast}',
+      data: {
+        'sogiodubao': sogiodubao,
+        'date': date,
+      },
+      contentType: 'application/json; charset=UTF-8',
+    );
+    try {
+      return response
+          .map<Temperatures>(
+              (e) => Temperatures.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      return [];
+    }
   }
 }

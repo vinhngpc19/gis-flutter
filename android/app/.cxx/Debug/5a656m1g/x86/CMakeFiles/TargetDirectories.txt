@@ -1,0 +1,2 @@
+C:/Users/ADMIN/Documents/codelor/gis-flutter/android/app/.cxx/Debug/5a656m1g/x86/CMakeFiles/edit_cache.dir
+C:/Users/ADMIN/Documents/codelor/gis-flutter/android/app/.cxx/Debug/5a656m1g/x86/CMakeFiles/rebuild_cache.dir

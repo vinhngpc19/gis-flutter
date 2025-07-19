@@ -63,3 +63,18 @@ int? numberOfLines(TextStyle style, String text) {
   final int numberOfLines = numberOfLine.round() + numberOfLineBreak;
   return numberOfLines;
 }
+
+String parseDateFromDotNetString(String? input,
+    {String format = 'dd/MM/yyyy HH:mm'}) {
+  if (input == null || input.isEmpty) return '';
+  final reg = RegExp(r"/Date\((\d+)\)/");
+  final match = reg.firstMatch(input);
+  if (match != null && match.groupCount > 0) {
+    final millis = int.tryParse(match.group(1)!);
+    if (millis != null) {
+      final dt = DateTime.fromMillisecondsSinceEpoch(millis);
+      return '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')} ${dt.day.toString().padLeft(2, '0')}/${dt.month.toString().padLeft(2, '0')}/${dt.year}';
+    }
+  }
+  return input;
+}

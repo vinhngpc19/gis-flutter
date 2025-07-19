@@ -107,3 +107,106 @@ class RestClient extends RestClientBase {
     }
   }
 }
+
+/// Extension để thêm tính năng contentType linh hoạt
+extension RestClientContentTypeExtension on RestClient {
+  /// GET với contentType tùy chỉnh
+  Future<dynamic> getWithContentType(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    dynamic data,
+    CancelToken? cancelToken,
+    ProgressCallback? onReceiveProgress,
+    String? contentType,
+  }) async {
+    final customOptions = options?.copyWith(contentType: contentType) ??
+        Options(contentType: contentType);
+
+    return get(
+      path,
+      queryParameters: queryParameters,
+      options: customOptions,
+      data: data,
+      cancelToken: cancelToken,
+      onReceiveProgress: onReceiveProgress,
+    );
+  }
+
+  /// POST với contentType tùy chỉnh
+  Future<dynamic> postWithContentType(
+    String path, {
+    Map<String, dynamic>? formData,
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+    String? contentType,
+  }) async {
+    final customOptions = options?.copyWith(contentType: contentType) ??
+        Options(contentType: contentType);
+
+    return post(
+      path,
+      formData: formData,
+      data: data,
+      queryParameters: queryParameters,
+      options: customOptions,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+  }
+
+  /// PUT với contentType tùy chỉnh
+  Future<dynamic> putWithContentType(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+    String? contentType,
+  }) async {
+    final customOptions = options?.copyWith(contentType: contentType) ??
+        Options(contentType: contentType);
+
+    return put(
+      path,
+      data: data,
+      queryParameters: queryParameters,
+      options: customOptions,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+  }
+
+  /// PATCH với contentType tùy chỉnh
+  Future<dynamic> patchWithContentType(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+    String? contentType,
+  }) async {
+    final customOptions = options?.copyWith(contentType: contentType) ??
+        Options(contentType: contentType);
+
+    return patch(
+      path,
+      data: data,
+      queryParameters: queryParameters,
+      options: customOptions,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+  }
+}

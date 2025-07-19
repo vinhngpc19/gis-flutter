@@ -89,10 +89,15 @@ abstract class RestClientBase {
           );
       }
     }
+
+    if (e is ApiError) {
+      return e;
+    }
+    // fallback cho mọi loại lỗi khác
     return ApiError(
-      errorCode: e.errorCode as String?,
-      message: e.message as String?,
-      extraData: e?.data,
+      errorCode: null,
+      message: e.toString(),
+      extraData: null,
     );
   }
 
@@ -106,6 +111,9 @@ abstract class RestClientBase {
         extraData: response,
       );
     }
-    return response['data'] ?? response;
+    if (response is Map && response.containsKey('data')) {
+      return response['data'];
+    }
+    return response;
   }
 }

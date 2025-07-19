@@ -1,9 +1,11 @@
 import 'package:gis_disaster_flutter/data/model/disaster_param.dart';
 import 'package:gis_disaster_flutter/data/model/feature_marker.dart';
 import 'package:gis_disaster_flutter/data/model/feature_polygon.dart';
+import 'package:gis_disaster_flutter/data/model/luquetsatlo_model.dart';
 import 'package:gis_disaster_flutter/data/model/province.dart';
 import 'package:gis_disaster_flutter/data/model/province_by_api.dart';
 import 'package:gis_disaster_flutter/data/repository_impl/mock_disaster_repository_impl.dart';
+import 'dart:async';
 
 class MockDisasterUseCase {
   final _repository = MockDisasterRepositoryImpl();
@@ -106,5 +108,24 @@ class MockDisasterUseCase {
       print(err);
       onError();
     }
+  }
+
+  Future<List<Temperatures>> getForecast({
+    required int sogiodubao,
+    required String date,
+    required Function() onSuccess,
+    required Function() onError,
+  }) async {
+    try {
+      final data =
+          await _repository.getForecast(sogiodubao: sogiodubao, date: date);
+      print('Forecast data use case loaded: ${data.length} items');
+      onSuccess();
+      return data;
+    } catch (err) {
+      print('Forecast API error: $err');
+      onError();
+    }
+    return [];
   }
 }

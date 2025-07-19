@@ -7,4 +7,9 @@ class AppUrl {
   static String get addDisasterData => '/add-disaster/';
   static String get updateDisaster => '/update-disaster/';
   static String get deleteDisaster => '/delete-disaster/';
+  //Mapbox
+  //Forecast
+  static String get mapboxUrl => 'https://luquetsatlo.nchmf.gov.vn/LayerMapBox';
+
+  static String get forecast => '/getDSCanhbaoSLLQ';
 }
